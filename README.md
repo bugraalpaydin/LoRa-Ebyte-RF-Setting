@@ -1,0 +1,1 @@
+In this project there will be at least 2 classes, one of them for communication via serial port and the other one is for GUI. The code is currenty messy and will be revised, new classes and methods will be created for cleaner code.
