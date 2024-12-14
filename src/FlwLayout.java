@@ -41,7 +41,7 @@ public class FlwLayout extends JFrame implements ActionListener {
     Serial availablePort = new Serial();
 
     String[] baudRateOptions = {"  1200", "  2400", "  4800", "  9600", " 19200", " 38400", " 57600", "115200"};
-    String[] transmisionPowerOptions = {"   21", "  24", "  27", "  30"};
+    String[] transmisionPowerOptions = {"  21", "  24", "  27", "  30"};
     String[] wakeupTimeOptions = {" 250", " 500", " 750", "1000", "1250", "1500", "1750", "2000"};
     String[] airDataOptions = {" 0.3", " 1.2", " 2.4", " 4.8", " 9.6", "19.2"};
     String[] parityBitOptions = {"8N1", "8O1", "8E1"};
@@ -71,6 +71,7 @@ public class FlwLayout extends JFrame implements ActionListener {
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBorder(new LineBorder(Color.BLACK));
         bottomPanel.setBackground(Color.WHITE);
+        bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(connectButton);
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(sendDataButton);
@@ -79,6 +80,7 @@ public class FlwLayout extends JFrame implements ActionListener {
         bottomPanel.add(Box.createVerticalGlue());
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(exitButton);
+        
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
 
         JPanel optionsPanel = new JPanel();
@@ -103,63 +105,53 @@ public class FlwLayout extends JFrame implements ActionListener {
         configureComboBox(parityBitcb, comboBoxSize);
         configureTextField(channelTextField, textFieldSize);
 
-        JPanel baudRatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        baudRatePanel.setBackground(Color.WHITE);
-        JLabel baudRateLabel = new JLabel("Baud Rate Configs : ");
-        baudRatePanel.add(baudRateLabel);
-        baudRatePanel.add(baudRatecb);
 
-        JPanel powerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        powerPanel.setBackground(Color.WHITE);
-        JLabel powerLabel = new JLabel("Transmission Power Configs : ");
-        powerPanel.add(powerLabel);
-        powerPanel.add(powercb);
-
-        JPanel wakeupTimePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        wakeupTimePanel.setBackground(Color.WHITE);
-        JLabel wakeupTimeLabel = new JLabel("Wake Up Time Configs : ");
-        wakeupTimePanel.add(wakeupTimeLabel);
-        wakeupTimePanel.add(wakeupTimecb);
-        
-        JPanel airDataRatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        airDataRatePanel.setBackground(Color.WHITE);
-        JLabel airDataRateLabel = new JLabel("Air Data Rate Configs : ");
-        airDataRatePanel.add(airDataRateLabel);
-        airDataRatePanel.add(airDataRatecb);
-
-        JPanel parityBitPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        parityBitPanel.setBackground(Color.WHITE);
-        JLabel parityBitLabel = new JLabel("Parity Bit Configs : ");
-        parityBitPanel.add(parityBitLabel);
-        parityBitPanel.add(parityBitcb);
-
-        JPanel channelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        channelPanel.setBackground(Color.WHITE);
-        JLabel channelLabel = new JLabel("Communication Channel : ");
-        channelPanel.add(channelLabel);
-        channelPanel.add(channelTextField);
-
-        optionsPanel.add(baudRatePanel);
         optionsPanel.add(Box.createVerticalStrut(10));
-
-        optionsPanel.add(powerPanel);
+        optionsPanel.add(createLabeledComboBox("    Baud Rate Configs :  ", baudRatecb, comboBoxSize, 300));
         optionsPanel.add(Box.createVerticalStrut(10));
         
-        optionsPanel.add(wakeupTimePanel);
+        optionsPanel.add(createLabeledComboBox("    Transmission Power Configs : ", powercb, comboBoxSize, 300));
         optionsPanel.add(Box.createVerticalStrut(10));
           
-        optionsPanel.add(airDataRatePanel);
+        optionsPanel.add(createLabeledComboBox("    Wake Up Time Configs : ", wakeupTimecb, comboBoxSize, 300));
         optionsPanel.add(Box.createVerticalStrut(10));
 
-        optionsPanel.add(parityBitPanel);
+        optionsPanel.add(createLabeledComboBox("    Air data Rate Configs : ", airDataRatecb, comboBoxSize, 300));
         optionsPanel.add(Box.createVerticalStrut(10));
         
+        optionsPanel.add(createLabeledComboBox("    Parity Bit Configs : ", parityBitcb, comboBoxSize, 300));
+        optionsPanel.add(Box.createVerticalStrut(10));
+        
+        JPanel channelPanel = new JPanel();
+        channelPanel.setLayout(new BoxLayout(channelPanel, BoxLayout.X_AXIS));
+        channelPanel.setBackground(Color.WHITE);
+        JLabel channelLabel = new JLabel("    Communication Channel : ");
+        channelLabel.setAlignmentX(LEFT_ALIGNMENT);
+        channelTextField.setAlignmentX(LEFT_ALIGNMENT);
+        channelPanel.add(channelLabel);
+        channelLabel.add(Box.createHorizontalStrut(10));
+        channelPanel.add(channelTextField);
+        channelPanel.setAlignmentX(LEFT_ALIGNMENT);
         optionsPanel.add(channelPanel);
-        optionsPanel.add(Box.createVerticalStrut(10));
-        
+    
         mainContainer.add(optionsPanel);
         mainContainer.add(bottomPanel, BorderLayout.WEST);
-        
+    }
+    private JPanel createLabeledComboBox(String labelText, JComboBox<String> comboBox, Dimension dimension, int labelLength){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        panel.setBackground(Color.WHITE);
+
+        JLabel label = new JLabel(labelText);
+        label.setPreferredSize(new Dimension(labelLength, dimension.height));
+
+        comboBox.setPreferredSize(dimension);
+
+        panel.add(label);
+        panel.add(comboBox);
+
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+        return panel;
     }
     private void configureComboBox(JComboBox<String> comboBox, Dimension size){
         comboBox.setPreferredSize(size);
@@ -179,32 +171,39 @@ public class FlwLayout extends JFrame implements ActionListener {
             dispose();
         }
         else if(e.getSource().equals(setParametersButton)){
-            System.out.println("tunahan kaya");
+            System.out.println("this feature is not supported yet");
         }
         else if(e.getSource().equals(sendDataButton)){
-            System.out.println("toprak gül");
+            System.out.println("this feature is not supported yet");
         }
         else if(e.getSource().equals(connectButton)){
-            System.out.println("bugra alp aydin");
-            availablePort.findLoRaPort((byte)0xc3);
+            String selectedBaudRate = (String) baudRatecb.getSelectedItem();
+            System.out.println(selectedBaudRate.trim());
         }
         else if(e.getSource().equals(baudRatecb)){
-            System.out.println("this coming from baud rate combobox");
+            String selectedBaudRate = (String) baudRatecb.getSelectedItem();
+            System.out.println(selectedBaudRate.trim());
         }
         else if(e.getSource().equals(powercb)){
-            System.out.println("this coming from power combobox");
+            String selectedTransmissionPower = (String) powercb.getSelectedItem();
+            System.out.println(selectedTransmissionPower.trim());
         }
         else if(e.getSource().equals(airDataRatecb)){
-            System.out.println("this coming from air data rate combobox");
+            String selectedAirDataRate = (String) airDataRatecb.getSelectedItem();
+            System.out.println(selectedAirDataRate.trim());
         }
         else if(e.getSource().equals(parityBitcb)){
-            System.out.println("this coming from parity combobox");
+            String selectedParityBit = (String) parityBitcb.getSelectedItem();
+            System.out.println(selectedParityBit.trim());
         }
         else if(e.getSource().equals(wakeupTimecb)){
-            System.out.println("this coming from wake up time combobox");
+            String selectedWakeupTime = (String) wakeupTimecb.getSelectedItem();
+            System.out.println(selectedWakeupTime.trim());
         }
         else if(e.getSource().equals(channelTextField)){
-            System.out.println("this coming from channel text field");
+            String enteredText = channelTextField.getText();
+            System.out.println("Entered text : " + enteredText);
+            channelTextField.setText("");
         }
         else{
             System.out.println("error gettin source");

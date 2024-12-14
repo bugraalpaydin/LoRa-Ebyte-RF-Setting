@@ -1,3 +1,4 @@
-when i press enter key in channel text field i wan it to erase what is writing in the field
 i want to add lora version info up of the screen
-i want to aling comboboxes
+comboboxes info string are not fully visible
+add butonCreate and comboBox create methods and assign an id for each of them, so in actionPerformed method we can use switch case with ids
+add terminal to terminalTextField and make it as slider
