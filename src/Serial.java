@@ -26,7 +26,7 @@ public class Serial{
             initialBytes[0] = initialLoRaMessage;
             for(int k = 0; k < 3; k++)
                 bytesWritten = dummyPort.writeBytes(initialBytes, initialBytes.length); //i cant write to stm32-nucleo serial port ACM0 idk why :(
-            if(bytesWritten!= 11){
+            if(bytesWritten!= 1){
                 System.out.println("Error writing to" +  dummyPort.getSystemPortName() + ":" + bytesWritten + " bytes written.");
             }
             try {
@@ -66,6 +66,12 @@ public class Serial{
             } 
         }
         return false;
+    }
+    public void sendData(byte data){
+        System.out.println("in sendData method");
+    }
+    public void setParameters(){
+        System.out.println("in setParameters method");
     }
 }
 

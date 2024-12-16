@@ -1,4 +1,3 @@
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -9,9 +8,8 @@ import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
-
-import com.fazecast.jSerialComm.SerialPort;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,7 +18,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.CookieHandler;
 
 public class FlwLayout extends JFrame implements ActionListener {
     Container mainContainer = this.getContentPane();
@@ -33,12 +30,12 @@ public class FlwLayout extends JFrame implements ActionListener {
     JButton exitButton = new JButton("      Exit          ");
 
     JTextField channelTextField = new JTextField();
-    JTextField portTextField = new JTextField("Communication Channel");
     JTextField terminalField = new JTextField("");
-    JTextField addressHighField = new JTextField("High Address");
-    JTextField addressLowField = new JTextField("Low Address");
-    
-    Serial availablePort = new Serial();
+    JTextField addressHighField = new JTextField("");
+    JTextField addressLowField = new JTextField("");
+    JTextField loraInfoField = new JTextField("");
+
+    Serial loraPort = new Serial();
 
     String[] baudRateOptions = {"  1200", "  2400", "  4800", "  9600", " 19200", " 38400", " 57600", "115200"};
     String[] transmisionPowerOptions = {"  21", "  24", "  27", "  30"};
@@ -51,6 +48,10 @@ public class FlwLayout extends JFrame implements ActionListener {
     JComboBox<String> wakeupTimecb = new JComboBox<>(wakeupTimeOptions);
     JComboBox<String> airDataRatecb = new JComboBox<>(airDataOptions);
     JComboBox<String> parityBitcb = new JComboBox<>(parityBitOptions);
+
+    Dimension comboBoxSize = new Dimension(150, 25);
+    Dimension textFieldSize = new Dimension(150, 25);
+    Dimension terminalSize = new Dimension(500, 170);
     public FlwLayout(){
         setLayout(layout);
         mainContainer.setLayout(new BorderLayout(10, 10));
@@ -66,6 +67,7 @@ public class FlwLayout extends JFrame implements ActionListener {
         topPanel.setBorder(new LineBorder(Color.BLACK, 2));
         topPanel.setBackground(Color.WHITE); 
         topPanel.setLayout(new FlowLayout(5)); 
+        topPanel.add(createLabeledTextField("LoRa Info : ", loraInfoField, textFieldSize, 100));
         mainContainer.add(topPanel, BorderLayout.NORTH);
 
         JPanel bottomPanel = new JPanel();
@@ -87,55 +89,60 @@ public class FlwLayout extends JFrame implements ActionListener {
         optionsPanel.setBorder(new LineBorder(Color.BLACK));
         optionsPanel.setBackground(Color.WHITE);
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
- 
-        Dimension comboBoxSize = new Dimension(150, 25);
-        Dimension textFieldSize = new Dimension(150, 25);
-
-        baudRatecb.addActionListener(this);
-        powercb.addActionListener(this);
-        wakeupTimecb.addActionListener(this);
-        airDataRatecb.addActionListener(this);
-        parityBitcb.addActionListener(this);
-        channelTextField.addActionListener(this);
-
-        configureComboBox(baudRatecb, comboBoxSize);
-        configureComboBox(powercb, comboBoxSize);
-        configureComboBox(wakeupTimecb, comboBoxSize);
-        configureComboBox(airDataRatecb, comboBoxSize);
-        configureComboBox(parityBitcb, comboBoxSize);
-        configureTextField(channelTextField, textFieldSize);
-
 
         optionsPanel.add(Box.createVerticalStrut(10));
-        optionsPanel.add(createLabeledComboBox("    Baud Rate Configs :  ", baudRatecb, comboBoxSize, 300));
+        optionsPanel.add(createLabeledComboBox("    Baud Rate Configs :  ", baudRatecb, comboBoxSize, 200));
         optionsPanel.add(Box.createVerticalStrut(10));
         
-        optionsPanel.add(createLabeledComboBox("    Transmission Power Configs : ", powercb, comboBoxSize, 300));
+        optionsPanel.add(createLabeledComboBox("    Transmission Power Configs : ", powercb, comboBoxSize, 200));
         optionsPanel.add(Box.createVerticalStrut(10));
           
-        optionsPanel.add(createLabeledComboBox("    Wake Up Time Configs : ", wakeupTimecb, comboBoxSize, 300));
+        optionsPanel.add(createLabeledComboBox("    Wake Up Time Configs : ", wakeupTimecb, comboBoxSize, 200));
         optionsPanel.add(Box.createVerticalStrut(10));
 
-        optionsPanel.add(createLabeledComboBox("    Air data Rate Configs : ", airDataRatecb, comboBoxSize, 300));
+        optionsPanel.add(createLabeledComboBox("    Air data Rate Configs : ", airDataRatecb, comboBoxSize, 200));
         optionsPanel.add(Box.createVerticalStrut(10));
         
-        optionsPanel.add(createLabeledComboBox("    Parity Bit Configs : ", parityBitcb, comboBoxSize, 300));
+        optionsPanel.add(createLabeledComboBox("    Parity Bit Configs : ", parityBitcb, comboBoxSize, 200));
         optionsPanel.add(Box.createVerticalStrut(10));
         
-        JPanel channelPanel = new JPanel();
-        channelPanel.setLayout(new BoxLayout(channelPanel, BoxLayout.X_AXIS));
-        channelPanel.setBackground(Color.WHITE);
-        JLabel channelLabel = new JLabel("    Communication Channel : ");
-        channelLabel.setAlignmentX(LEFT_ALIGNMENT);
-        channelTextField.setAlignmentX(LEFT_ALIGNMENT);
-        channelPanel.add(channelLabel);
-        channelLabel.add(Box.createHorizontalStrut(10));
-        channelPanel.add(channelTextField);
-        channelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        optionsPanel.add(channelPanel);
-    
+        optionsPanel.add(createLabeledTextField("   Communication Channel :", channelTextField, textFieldSize, 200));
+        optionsPanel.add(Box.createVerticalStrut(10));
+        optionsPanel.add(createLabeledTextField("   Address High : ", addressHighField, textFieldSize, 200));
+        optionsPanel.add(Box.createVerticalStrut(10));
+        optionsPanel.add(createLabeledTextField("   Address Low : ", addressLowField, textFieldSize, 200));
+        optionsPanel.add(Box.createVerticalGlue());
+        optionsPanel.add(Box.createHorizontalStrut(50));
+        optionsPanel.add(createLabeledTextField("Termial : ", terminalField, terminalSize, 100));
+        optionsPanel.add(Box.createVerticalStrut(10));
         mainContainer.add(optionsPanel);
         mainContainer.add(bottomPanel, BorderLayout.WEST);
+    }
+
+    private JPanel createLabeledTextField(String labelText, JTextField textField, Dimension dimension, int labelLength){
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+    panel.setBackground(Color.WHITE);
+
+    JLabel label = new JLabel(labelText);
+    label.setPreferredSize(new Dimension(labelLength, dimension.height));
+    label.setMaximumSize(new Dimension(labelLength, dimension.height));
+    label.setMinimumSize(new Dimension(labelLength, dimension.height));
+
+    textField.setPreferredSize(dimension);
+    textField.setMaximumSize(dimension);
+    textField.setMinimumSize(dimension);
+    textField.addActionListener(this);
+
+    if(textField.equals(loraInfoField)){
+        textField.setEditable(false);
+    }
+
+    panel.add(label);
+    panel.add(textField);
+    panel.setAlignmentX(LEFT_ALIGNMENT);
+
+    return panel;
     }
     private JPanel createLabeledComboBox(String labelText, JComboBox<String> comboBox, Dimension dimension, int labelLength){
         JPanel panel = new JPanel();
@@ -144,8 +151,14 @@ public class FlwLayout extends JFrame implements ActionListener {
 
         JLabel label = new JLabel(labelText);
         label.setPreferredSize(new Dimension(labelLength, dimension.height));
+        label.setMaximumSize(new Dimension(labelLength, dimension.height));
+        label.setMinimumSize(new Dimension(labelLength, dimension.height));
 
-        comboBox.setPreferredSize(dimension);
+        comboBox.setPreferredSize(new Dimension(labelLength, dimension.height));
+        comboBox.setMinimumSize(new Dimension(labelLength, dimension.height));
+        comboBox.setMaximumSize(new Dimension(labelLength, dimension.height));
+        comboBox.addActionListener(this);
+        comboBox.setAlignmentX(LEFT_ALIGNMENT);
 
         panel.add(label);
         panel.add(comboBox);
@@ -153,32 +166,20 @@ public class FlwLayout extends JFrame implements ActionListener {
         panel.setAlignmentX(LEFT_ALIGNMENT);
         return panel;
     }
-    private void configureComboBox(JComboBox<String> comboBox, Dimension size){
-        comboBox.setPreferredSize(size);
-        comboBox.setMaximumSize(size);
-        comboBox.setMinimumSize(size);
-        comboBox.setAlignmentX(LEFT_ALIGNMENT);
-    }
-    private void configureTextField(JTextField textField, Dimension size){
-        textField.setPreferredSize(size);
-        textField.setMaximumSize(size);
-        textField.setMinimumSize(size);
-        textField.setAlignmentX(LEFT_ALIGNMENT);
-    }
+
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource().equals(exitButton)){
             dispose();
         }
         else if(e.getSource().equals(setParametersButton)){
-            System.out.println("this feature is not supported yet");
+            loraPort.setParameters();
         }
         else if(e.getSource().equals(sendDataButton)){
-            System.out.println("this feature is not supported yet");
+            loraPort.sendData((byte)30);
         }
         else if(e.getSource().equals(connectButton)){
-            String selectedBaudRate = (String) baudRatecb.getSelectedItem();
-            System.out.println(selectedBaudRate.trim());
+            loraPort.findLoRaPort((byte) 0xc3);
         }
         else if(e.getSource().equals(baudRatecb)){
             String selectedBaudRate = (String) baudRatecb.getSelectedItem();
@@ -202,8 +203,23 @@ public class FlwLayout extends JFrame implements ActionListener {
         }
         else if(e.getSource().equals(channelTextField)){
             String enteredText = channelTextField.getText();
-            System.out.println("Entered text : " + enteredText);
+            System.out.println("Entered comminucation channel : " + enteredText);
             channelTextField.setText("");
+        }
+        else if(e.getSource().equals(addressHighField)){
+            String enteredAddressHigh = addressHighField.getText();
+            System.out.println("Entered address high : " + enteredAddressHigh);
+            addressHighField.setText("");
+        }
+        else if(e.getSource().equals(addressLowField)){
+            String enteredAddressLow = addressLowField.getText();
+            System.out.println("Entered address low : " + enteredAddressLow);
+            addressLowField.setText("");
+        }
+        else if(e.getSource().equals(terminalField)){
+            System.out.println("this coming from termianal");
+            String terminalEnteredString = terminalField.getText();
+            System.out.println(terminalEnteredString);
         }
         else{
             System.out.println("error gettin source");

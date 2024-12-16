@@ -1,4 +1,3 @@
-i want to add lora version info up of the screen
-comboboxes info string are not fully visible
 add butonCreate and comboBox create methods and assign an id for each of them, so in actionPerformed method we can use switch case with ids
-add terminal to terminalTextField and make it as slider
+make it as slider
+add clear button for terminal
