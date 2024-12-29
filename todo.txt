@@ -1,3 +1,5 @@
-add butonCreate and comboBox create methods and assign an id for each of them, so in actionPerformed method we can use switch case with ids
-make it as slider
+make terminal sliding
 add clear button for terminal
+for shorter and maybe cleaner code declare an array for all the options lora has. Options equal number is increasing aritmetically
+so, index of the equal option is the number we will set
+when a string or character entered via address high, address low, communication channel parseInt method thorws an exception

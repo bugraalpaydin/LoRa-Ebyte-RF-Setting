@@ -2,21 +2,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
+
 
 public class Buttons extends JButton implements ActionListener{
     JButton connectButton;
     JButton setParametersButton;
     JButton sendDataButton;
     JButton exitButton;
-
+    JFrame frame;
+    LoRaConfig loraConfig = new LoRaConfig();
     Serial loraPort = new Serial();
-
-    public Buttons(){
+    LoRaConfig.CONFIG config;
+    public Buttons(JFrame frame){
         connectButton = new JButton("Connect       ");
         setParametersButton = new JButton("Set Params  ");
         sendDataButton = new JButton(" Send Data  ");
         exitButton = new JButton("      Exit          ");
-
+        this.frame = frame;
         connectButton.addActionListener(this);
         setParametersButton.addActionListener(this);
         sendDataButton.addActionListener(this);
@@ -30,10 +33,11 @@ public class Buttons extends JButton implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource().equals(exitButton)){
-            //dispose();
+            //frame.dispose();
         }
         else if(e.getSource().equals(setParametersButton)){
-            loraPort.setParameters();
+            loraConfig.setConfiguration();
+            loraPort.sendParameters();
         }
         else if(e.getSource().equals(sendDataButton)){
             loraPort.sendData((byte)30);

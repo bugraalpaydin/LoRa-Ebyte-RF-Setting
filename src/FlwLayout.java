@@ -15,9 +15,9 @@ public class FlwLayout extends JFrame {
     Container mainContainer = this.getContentPane();
     Container container = this.getContentPane();
     FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 10, 20);
-
+    JFrame frame = new JFrame();
     Serial loraPort = new Serial();
-    Buttons buttons = new Buttons();
+    Buttons buttons = new Buttons(frame);
     ComboBoxes comboBoxes = new ComboBoxes();
     TextFields textFields = new TextFields();
 

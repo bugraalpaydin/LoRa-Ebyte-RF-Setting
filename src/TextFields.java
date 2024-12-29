@@ -14,6 +14,7 @@ public class TextFields extends JTextField implements ActionListener {
     JTextField addressHighField;
     JTextField addressLowField;
     JTextField loraInfoField;
+    public static byte initialVersionNumber;
     public TextFields(){
         channelTextField = new JTextField();
         terminalField = new JTextField("");
@@ -21,6 +22,7 @@ public class TextFields extends JTextField implements ActionListener {
         addressLowField = new JTextField("");
         loraInfoField = new JTextField("");
     }
+
     public JPanel createLabeledTextField(String labelText, JTextField textField, Dimension dimension, int labelLength){
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -37,7 +39,6 @@ public class TextFields extends JTextField implements ActionListener {
     textField.addActionListener(this);
 
     if(textField.equals(loraInfoField)){
-        textField.setEditable(false);
     }
 
     panel.add(label);
@@ -46,21 +47,53 @@ public class TextFields extends JTextField implements ActionListener {
 
     return panel;
     }
+
+    public JTextField getLoraInfoField(){
+        return loraInfoField;
+    }
+
+    public void editLoraInfoField(){
+        System.out.println("Product Model : " + initialVersionNumber);
+        loraInfoField.setText("Product Model : " + initialVersionNumber);
+        loraInfoField.setEditable(false);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource().equals(channelTextField)){
             String enteredText = channelTextField.getText();
-            System.out.println("Entered comminucation channel : " + enteredText);
-            channelTextField.setText("");
+            int enteredChannelValue = Integer.parseInt(enteredText);
+            if(enteredChannelValue > 31){
+                channelTextField.setText("Undesired value");
+            }
+            else if(enteredChannelValue <= 31){
+                LoRaConfig.CONFIG.chan = enteredChannelValue;
+                channelTextField.setText("");
+            }
+            System.out.println(LoRaConfig.CONFIG.chan);
         }
         else if(e.getSource().equals(addressHighField)){
-            String enteredAddressHigh = addressHighField.getText();
-            System.out.println("Entered address high : " + enteredAddressHigh);
+            String enteredText = addressHighField.getText();
+            int enteredADDH = Integer.parseInt(enteredText);
+            if(enteredADDH > 255){
+                addressHighField.setText("Undesired value");
+            }
+            else if(enteredADDH <= 255){
+                LoRaConfig.CONFIG.addH = enteredADDH;
+            }
+            System.out.println(LoRaConfig.CONFIG.addH);
             addressHighField.setText("");
         }
         else if(e.getSource().equals(addressLowField)){
-            String enteredAddressLow = addressLowField.getText();
-            System.out.println("Entered address low : " + enteredAddressLow);
+            String enteredText = addressLowField.getText();
+            int enteredADDL = Integer.parseInt(enteredText);
+            if(enteredADDL > 255){
+                addressHighField.setText("Undesired value");
+            }
+            else if(enteredADDL <= 255){
+                LoRaConfig.CONFIG.addL = enteredADDL;
+            }
+            System.out.println(LoRaConfig.CONFIG.addL);
             addressLowField.setText("");
         }
         else if(e.getSource().equals(terminalField)){
