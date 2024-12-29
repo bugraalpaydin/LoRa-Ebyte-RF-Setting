@@ -38,7 +38,7 @@ public class Buttons extends JButton implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource().equals(exitButton)){
-            //frame.dispose();
+            System.exit(0);
         }
         else if(e.getSource().equals(setParametersButton)){
             loraConfig.setConfiguration();

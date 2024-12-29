@@ -109,6 +109,7 @@ public class Serial {
     */
     public boolean portRead(SerialPort port, int message) {
         comingBytes.clear();
+        StringBuilder sb = new StringBuilder();
         int bytesAvailable = port.bytesAvailable();
         int state = 4; 
         if(message == -63)
@@ -125,6 +126,10 @@ public class Serial {
             for (int i = 0; i < buffer.length; i++) {
                 System.out.println("Byte received: " + buffer[i]);
             }
+
+            for(int i = 0; i < buffer.length; i++){
+                sb.append(buffer[i] + " ");
+            }
             try {
                 Thread.sleep(50); // Verilerin gelmesi için biraz bekle
             } 
@@ -132,6 +137,10 @@ public class Serial {
                 e.printStackTrace();
             }
         }
+        
+        textFields.terminalField.append(sb.toString());
+        textFields.terminalField.setCaretPosition(textFields.terminalField.getDocument().getLength()); //chatgpt
+
         System.out.println("Complete data: " + comingBytes);
         if(comingBytes.size() == 4){
             updateLoraInfo(comingBytes);

@@ -4,14 +4,16 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class TextFields extends JTextField implements ActionListener {
     JTextField channelTextField;
-    JTextField terminalField;
+    JTextArea terminalField;
     JTextField addressHighField;
     JTextField addressLowField;
     JTextField loraInfoField;
@@ -22,36 +24,63 @@ public class TextFields extends JTextField implements ActionListener {
 
     public TextFields(){
         channelTextField = new JTextField();
-        terminalField = new JTextField("");
+        terminalField = new JTextArea("");
         addressHighField = new JTextField("");
         addressLowField = new JTextField("");
         loraInfoField = new JTextField("");
     }
+    public JPanel createLabeledTextArea(String labelText, JTextArea textArea, Dimension dimension, int labelLength){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        panel.setBackground(Color.WHITE);
 
-    public JPanel createLabeledTextField(String labelText, JTextField textField, Dimension dimension, int labelLength){
-    JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-    panel.setBackground(Color.WHITE);
+        // Label kısmı
+        JLabel label = new JLabel(labelText);
+        label.setPreferredSize(new Dimension(labelLength, dimension.height));
+        label.setMaximumSize(new Dimension(labelLength, dimension.height));
+        label.setMinimumSize(new Dimension(labelLength, dimension.height));
 
-    JLabel label = new JLabel(labelText);
-    label.setPreferredSize(new Dimension(labelLength, dimension.height));
-    label.setMaximumSize(new Dimension(labelLength, dimension.height));
-    label.setMinimumSize(new Dimension(labelLength, dimension.height));
+        textArea.setBorder(BorderFactory.createEtchedBorder());
 
-    textField.setPreferredSize(dimension);
-    textField.setMaximumSize(dimension);
-    textField.setMinimumSize(dimension);
-    textField.addActionListener(this);
+        // JTextArea kısmı
+        textArea.setPreferredSize(dimension);
+        textArea.setMaximumSize(dimension);
+        textArea.setMinimumSize(dimension);
+        textArea.setLineWrap(true);  // Satır sonlarına sarması için
+        textArea.setWrapStyleWord(true);  // Kelime sarma
 
-    if(textField.equals(loraInfoField)){
-        textField.setEditable(false);
+        // JPanel'e eklemeler
+        panel.add(label);
+        panel.add(textArea);
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+
+        return panel;
     }
 
-    panel.add(label);
-    panel.add(textField);
-    panel.setAlignmentX(LEFT_ALIGNMENT);
+    public JPanel createLabeledTextField(String labelText, JTextField textField, Dimension dimension, int labelLength){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        panel.setBackground(Color.WHITE);
 
-    return panel;
+        JLabel label = new JLabel(labelText);
+        label.setPreferredSize(new Dimension(labelLength, dimension.height));
+        label.setMaximumSize(new Dimension(labelLength, dimension.height));
+        label.setMinimumSize(new Dimension(labelLength, dimension.height));
+
+        textField.setPreferredSize(dimension);
+        textField.setMaximumSize(dimension);
+        textField.setMinimumSize(dimension);
+        textField.addActionListener(this);
+
+        if(textField.equals(loraInfoField)){
+            textField.setEditable(false);
+        }
+
+        panel.add(label);
+        panel.add(textField);
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+
+        return panel;
     }
 
     public JTextField getLoraInfoField(){
