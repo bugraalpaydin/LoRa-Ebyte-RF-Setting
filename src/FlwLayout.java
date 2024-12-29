@@ -16,10 +16,11 @@ public class FlwLayout extends JFrame {
     Container container = this.getContentPane();
     FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 10, 20);
     JFrame frame = new JFrame();
-    Serial loraPort = new Serial();
-    Buttons buttons = new Buttons(frame);
     ComboBoxes comboBoxes = new ComboBoxes();
     TextFields textFields = new TextFields();
+    LoRaConfig loraConfig = new LoRaConfig(comboBoxes);
+    Serial loraPort = new Serial(textFields, loraConfig);
+    Buttons buttons = new Buttons(frame, textFields, comboBoxes);
 
     Dimension comboBoxSize = new Dimension(150, 25);
     Dimension textFieldSize = new Dimension(150, 25);
@@ -45,6 +46,8 @@ public class FlwLayout extends JFrame {
         bottomPanel.add(buttons.connectButton);
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(buttons.sendDataButton);
+        bottomPanel.add(Box.createVerticalStrut(10));
+        bottomPanel.add(buttons.getParametersButton);
         bottomPanel.add(Box.createVerticalStrut(10));
         bottomPanel.add(buttons.setParametersButton);
         bottomPanel.add(Box.createVerticalGlue());

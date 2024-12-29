@@ -12,12 +12,10 @@ import javax.swing.JPanel;
 
 public class ComboBoxes extends JComboBox implements ActionListener{
     String[] baudRateOptions = {"  1200", "  2400", "  4800", "  9600", " 19200", " 38400", " 57600", "115200"};
-    String[] transmisionPowerOptions = {"  21", "  24", "  27", "  30"};
+    String[] transmisionPowerOptions = {"  30", "  27", "  24", "  21"};
     String[] wakeupTimeOptions = {" 250", " 500", " 750", "1000", "1250", "1500", "1750", "2000"};
     String[] airDataOptions = {" 0.3", " 1.2", " 2.4", " 4.8", " 9.6", "19.2"};
     String[] parityBitOptions = {"8N1", "8O1", "8E1"};
-
-    LoRaConfig lora = new LoRaConfig();
 
     JComboBox<String> baudRatecb; 
     JComboBox<String> powercb;
@@ -54,6 +52,14 @@ public class ComboBoxes extends JComboBox implements ActionListener{
         return panel;
     }
 
+    public void changeComboBoxes(){
+        baudRatecb.setSelectedIndex(LoRaConfig.SPEED.uartBaudRate);
+        powercb.setSelectedIndex(LoRaConfig.OPTION.transmissionPower);
+        wakeupTimecb.setSelectedIndex(LoRaConfig.OPTION.wirelessWakeupTime);
+        airDataRatecb.setSelectedIndex(LoRaConfig.SPEED.airDataRate);
+        parityBitcb.setSelectedIndex(LoRaConfig.SPEED.uartParity);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource().equals(baudRatecb)){
@@ -85,7 +91,6 @@ public class ComboBoxes extends JComboBox implements ActionListener{
                 LoRaConfig.SPEED.uartBaudRate = LoRaStatesDefine.UART_BPS_RATE.UART_BPS_115200;
                 break;
             }
-            lora.setConfiguration();   
         }
         else if(e.getSource().equals(powercb)){
             String selectedTransmissionPower = (String) powercb.getSelectedItem();
@@ -107,7 +112,6 @@ public class ComboBoxes extends JComboBox implements ActionListener{
                     System.out.println("Error setting transmission power");
                     break;
             }
-            lora.setConfiguration();   
         }
         else if(e.getSource().equals(airDataRatecb)){
             String selectedAirDataRate = (String) airDataRatecb.getSelectedItem();
@@ -134,7 +138,6 @@ public class ComboBoxes extends JComboBox implements ActionListener{
                 default:
                     break;
             }
-            lora.setConfiguration();   
         }
         else if(e.getSource().equals(parityBitcb)){
             String selectedParityBit = (String) parityBitcb.getSelectedItem();
@@ -150,7 +153,6 @@ public class ComboBoxes extends JComboBox implements ActionListener{
                     LoRaConfig.SPEED.uartParity = LoRaStatesDefine.E32_UART_PARITY.MODE_10_8E1;
                     break;
             }
-            lora.setConfiguration();   
         }
         else if(e.getSource().equals(wakeupTimecb)){
             String selectedWakeupTime = (String) wakeupTimecb.getSelectedItem();
@@ -181,7 +183,6 @@ public class ComboBoxes extends JComboBox implements ActionListener{
                 LoRaConfig.OPTION.wirelessWakeupTime = LoRaStatesDefine.WIRELESS_WAKE_UP_TIME.WAKE_UP_2000;
                 break;
             }
-            lora.setConfiguration();   
         }
         else{
             System.out.println("error gettin source");

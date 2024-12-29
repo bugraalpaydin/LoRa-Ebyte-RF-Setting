@@ -1,22 +1,23 @@
 import java.util.ArrayList;
-
-import javax.xml.soap.Text;
-
 import com.fazecast.jSerialComm.*;
 
-public class Serial{
+public class Serial {
     SerialPort[] availablePorts;
     public byte[] loraBytes;
     public int versionNumber;
-    TextFields textFields = new TextFields();
     SerialPort loraPort;
-    public Serial(TextFields textFields){    //Serial class constructor
+    public LoRaConfig loraConfig;
+    private TextFields textFields;
+    public ArrayList<Byte> comingBytes = new ArrayList<>(); // Gelen verileri tutacak ArrayList
+
+    public Serial(TextFields textFields, LoRaConfig loraConfig){    //Serial class constructor
         availablePorts = SerialPort.getCommPorts(); //this works fine tested with stm32-nucleo and it detects its port
         this.textFields = textFields;
+        this.loraConfig = loraConfig;
     }
 
-    public Serial(){
-        availablePorts = SerialPort.getCommPorts();
+    public Serial(){    //Serial class constructor
+        availablePorts = SerialPort.getCommPorts(); //this works fine tested with stm32-nucleo and it detects its port
     }
 
     public SerialPort loraPortGetter(){ //getter method for LoRa Port
@@ -24,7 +25,6 @@ public class Serial{
     }
     
     public void loraMessageSetter(byte loraMessage){ //setter method for LoRa message or maybe config
-        this.loraMessage = loraMessage;
     }
     
     public void findLoRaPort(byte initialLoRaMessage){
@@ -46,7 +46,7 @@ public class Serial{
                 e.printStackTrace();
             }
         
-            if(portRead(dummyPort) == true){
+            if(portRead(dummyPort, initialLoRaMessage) == true){
                 loraPort = dummyPort;
                 System.out.println(dummyPort.getSystemPortName() + " port is LoRa");
             }
@@ -58,6 +58,35 @@ public class Serial{
         if(loraPort == null){
             System.out.println("null");
         }
+    }
+
+    public void getLoRaParameters(byte initialLoRaMessage){
+        if(loraPort == null){
+            System.out.println("null");
+        }
+        int bytesWritten = 0;
+        byte[] initialBytes = new byte[1];
+        initialBytes[0] = initialLoRaMessage;
+        for(int k = 0; k < 3; k++)
+            bytesWritten = loraPort.writeBytes(initialBytes, initialBytes.length); 
+
+        if(bytesWritten!= 1){
+            System.out.println("Error writing to" +  loraPort.getSystemPortName() + ":" + bytesWritten + " bytes written.");
+        }
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    
+        if(portRead(loraPort, initialLoRaMessage) == true){
+            TextFields.initialAddressHigh = comingBytes.get(1);
+            TextFields.initialAddressLow = comingBytes.get(2); 
+            TextFields.initialChannel = comingBytes.get(4);
+            textFields.editAddressField();
+            loraConfig.getConfiguration(comingBytes);
+        }
+
     }
 
     public void setPortParameters(SerialPort port){     //method for setting port parameters
@@ -78,20 +107,23 @@ public class Serial{
         we use arraylist because lora sends its info with 866ms delay 
         and i think java doesn't know how to handle it. Java assume only 1 data comes
     */
-    public boolean portRead(SerialPort port) {
-        ArrayList<Byte> comingBytes = new ArrayList<>(); // Gelen verileri tutacak ArrayList
+    public boolean portRead(SerialPort port, int message) {
+        comingBytes.clear();
         int bytesAvailable = port.bytesAvailable();
-        while (comingBytes.size() < 4 && bytesAvailable > 0) { // 4 byte tamamlanana kadar devam et
-            if (bytesAvailable > 0) {
-                byte[] buffer = new byte[bytesAvailable];
-                int bytesRead = port.readBytes(buffer, bytesAvailable); // Veri oku
-                for (int i = 0; i < bytesRead; i++) {
-                    comingBytes.add(buffer[i]); // Okunan veriyi listeye ekle
-                }
-                // Gelen veriyi logla
-                for (int i = 0; i < buffer.length; i++) {
-                    System.out.println("Byte received: " + buffer[i]);
-                }
+        int state = 4; 
+        if(message == -63)
+            state = 6;
+
+        while (comingBytes.size() < state && bytesAvailable > 0) { // 4 byte tamamlanana kadar devam et
+            bytesAvailable = port.bytesAvailable();
+            byte[] buffer = new byte[bytesAvailable];
+            int bytesRead = port.readBytes(buffer, bytesAvailable); // Veri oku
+            for (int i = 0; i < bytesRead; i++) {
+                comingBytes.add(buffer[i]); // Okunan veriyi listeye ekle
+            }
+            // Gelen veriyi logla
+            for (int i = 0; i < buffer.length; i++) {
+                System.out.println("Byte received: " + buffer[i]);
             }
             try {
                 Thread.sleep(50); // Verilerin gelmesi için biraz bekle
@@ -105,6 +137,8 @@ public class Serial{
             updateLoraInfo(comingBytes);
             return true; // 4 byte alındığında true döndür
         }
+        else if(comingBytes.size() == 6)
+            return true;
         else
             return false;
     }

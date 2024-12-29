@@ -1,7 +1,15 @@
+import java.util.ArrayList;
+
 public class LoRaConfig{
 
     //public static int speedConfig;
     //public static int optionConfig;
+
+    public ComboBoxes comboBoxes;
+
+    public LoRaConfig(ComboBoxes comboBoxes){
+        this.comboBoxes = comboBoxes;
+    }
 
     public static class MODE_TYPE {
         public static final int MODE_0_NORMAL = 0;       // UART and wireless channel are open M0: 0, M1: 0
@@ -58,12 +66,44 @@ public class LoRaConfig{
         public MODULE_INFORMATION(int head, int freq, int version, int features) {
         }
     }
+    public void getConfiguration(ArrayList<Byte> comingBytes) {
+            // İlgili byte'ları almak için indexleri belirleyin
+        byte head = comingBytes.get(0); // İlk byte (head)
+        byte speedConfigByte = comingBytes.get(3); // İkinci byte (speedConfig)
+        byte optionConfigByte = comingBytes.get(5); // Üçüncü byte (optionConfig)
+
+        // Speed config bit-shifting işlemi
+        LoRaConfig.SPEED.uartParity = (speedConfigByte >> 6) & 0x03; // 2 bit uartParity
+        LoRaConfig.SPEED.uartBaudRate = (speedConfigByte >> 3) & 0x07; // 3 bit uartBaudRate
+        LoRaConfig.SPEED.airDataRate = speedConfigByte & 0x07; // 3 bit airDataRate
+
+        // Option config bit-shifting işlemi
+        LoRaConfig.OPTION.fixedTransmission = (optionConfigByte >> 7) & 0x01; // 1 bit fixedTransmission
+        LoRaConfig.OPTION.ioDriveMode = (optionConfigByte >> 6) & 0x01;
+        LoRaConfig.OPTION.wirelessWakeupTime = (optionConfigByte >> 3) & 0x07; // 3 bit wirelessWakeupTime
+        LoRaConfig.OPTION.fec = (optionConfigByte >> 2) & 0x01; // 1 bit fec
+        LoRaConfig.OPTION.transmissionPower = optionConfigByte & 0x03; // 2 bit transmissionPower
+
+        // Konfigürasyonun doğru şekilde yapıldığını loglayalım
+        System.out.println("Head: " + head);
+        System.out.println("Speed config: ");
+        System.out.println("  uartParity: " + LoRaConfig.SPEED.uartParity);
+        System.out.println("  uartBaudRate: " + LoRaConfig.SPEED.uartBaudRate);
+        System.out.println("  airDataRate: " + LoRaConfig.SPEED.airDataRate);
+        System.out.println("Option config: ");
+        System.out.println("  fixedTransmission: " + LoRaConfig.OPTION.fixedTransmission);
+        System.out.println("  ioDriveMode: " + LoRaConfig.OPTION.ioDriveMode);
+        System.out.println("  wirelessWakeupTime: " + LoRaConfig.OPTION.wirelessWakeupTime);
+        System.out.println("  fec: " + LoRaConfig.OPTION.fec);
+        System.out.println("  transmissionPower: " + LoRaConfig.OPTION.transmissionPower);
+        comboBoxes.changeComboBoxes();
+    }
 
     public void setConfiguration() {
-        LoRaConfig.OPTION.fixedTransmission = 1;
+        LoRaConfig.OPTION.fixedTransmission = 0;
         LoRaConfig.OPTION.ioDriveMode  = 1;
-        LoRaConfig.OPTION.fec = 1;
-        LoRaConfig.CONFIG.head = 0xC2;
+        LoRaConfig.OPTION.fec = 0;
+        LoRaConfig.CONFIG.head = 0xC0;
         CONFIG.speedConfig = (LoRaConfig.SPEED.uartParity << 6) | (LoRaConfig.SPEED.uartBaudRate << 3) | (LoRaConfig.SPEED.airDataRate); 
         CONFIG.optionConfig = (LoRaConfig.OPTION.fixedTransmission << 7) | (LoRaConfig.OPTION.ioDriveMode << 6) | (LoRaConfig.OPTION.wirelessWakeupTime << 3) | (LoRaConfig.OPTION.fec << 2) | (LoRaConfig.OPTION.transmissionPower);
         System.out.println("Speed config is : " + CONFIG.speedConfig);

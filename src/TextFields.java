@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -15,6 +16,10 @@ public class TextFields extends JTextField implements ActionListener {
     JTextField addressLowField;
     JTextField loraInfoField;
     public static byte initialVersionNumber;
+    public static byte initialAddressHigh;
+    public static int initialAddressLow;
+    public static int initialChannel;
+
     public TextFields(){
         channelTextField = new JTextField();
         terminalField = new JTextField("");
@@ -39,6 +44,7 @@ public class TextFields extends JTextField implements ActionListener {
     textField.addActionListener(this);
 
     if(textField.equals(loraInfoField)){
+        textField.setEditable(false);
     }
 
     panel.add(label);
@@ -53,9 +59,17 @@ public class TextFields extends JTextField implements ActionListener {
     }
 
     public void editLoraInfoField(){
+        loraInfoField.setEditable(true);
         System.out.println("Product Model : " + initialVersionNumber);
         loraInfoField.setText("Product Model : " + initialVersionNumber);
         loraInfoField.setEditable(false);
+    }
+
+    public void editAddressField(){
+        System.out.println("Product Model : " + initialVersionNumber);
+        addressHighField.setText(Integer.toString(initialAddressHigh));
+        addressLowField.setText(Integer.toString(initialAddressLow));
+        channelTextField.setText(Integer.toString(initialChannel));
     }
 
     @Override
