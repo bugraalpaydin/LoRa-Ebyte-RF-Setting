@@ -17,17 +17,20 @@ public class TextFields extends JTextField implements ActionListener {
     JTextField addressHighField;
     JTextField addressLowField;
     JTextField loraInfoField;
+    JTextField sendDataField;
     public static byte initialVersionNumber;
     public static byte initialAddressHigh;
     public static int initialAddressLow;
     public static int initialChannel;
 
+    
     public TextFields(){
         channelTextField = new JTextField();
         terminalField = new JTextArea("");
         addressHighField = new JTextField("");
         addressLowField = new JTextField("");
         loraInfoField = new JTextField("");
+        sendDataField = new JTextField("");
     }
     public JPanel createLabeledTextArea(String labelText, JTextArea textArea, Dimension dimension, int labelLength){
         JPanel panel = new JPanel();
@@ -143,6 +146,12 @@ public class TextFields extends JTextField implements ActionListener {
             System.out.println("this coming from termianal");
             String terminalEnteredString = terminalField.getText();
             System.out.println(terminalEnteredString);
+        }
+        else if(e.getSource().equals(sendDataField)){
+            String enteredData = sendDataField.getText();
+            int enteredDataInt = Integer.parseInt(enteredData);
+            Serial.data_to_send = enteredDataInt;
+            sendDataField.setText(" ");
         }
     }
 

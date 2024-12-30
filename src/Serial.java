@@ -5,11 +5,11 @@ public class Serial {
     SerialPort[] availablePorts;
     public byte[] loraBytes;
     public int versionNumber;
+    public static int data_to_send;
     SerialPort loraPort;
     public LoRaConfig loraConfig;
     private TextFields textFields;
     public ArrayList<Byte> comingBytes = new ArrayList<>(); // Gelen verileri tutacak ArrayList
-
     public Serial(TextFields textFields, LoRaConfig loraConfig){    //Serial class constructor
         availablePorts = SerialPort.getCommPorts(); //this works fine tested with stm32-nucleo and it detects its port
         this.textFields = textFields;
@@ -157,11 +157,21 @@ public class Serial {
         textFields.editLoraInfoField();
     }
 
-    public void sendData(byte data){
-        System.out.println("in sendData method");
+    public void sendData(int data_to_send){
+        byte[] bytes = new byte[4];
+        bytes[0] = (byte) LoRaConfig.CONFIG.addH;
+        bytes[1] = (byte) LoRaConfig.CONFIG.addL;
+        bytes[2] = (byte) LoRaConfig.CONFIG.chan;
+        bytes[3] = (byte) data_to_send;
+
+        int bytesWritten = loraPort.writeBytes(bytes, bytes.length);
+        System.out.println(bytesWritten);
     }
 
     public void sendParameters(){
+        while (loraPort.bytesAvailable() > 0) {
+            loraPort.readBytes(new byte[loraPort.bytesAvailable()], loraPort.bytesAvailable());//clean the buffer
+        }
         byte[] bytes = new byte[6];
         bytes[0] = (byte) LoRaConfig.CONFIG.head;
         bytes[1] = (byte) LoRaConfig.CONFIG.addH;

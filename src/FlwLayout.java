@@ -82,6 +82,8 @@ public class FlwLayout extends JFrame {
         optionsPanel.add(textFields.createLabeledTextField("   Address High : ", textFields.addressHighField, textFieldSize, 200));
         optionsPanel.add(Box.createVerticalStrut(10));
         optionsPanel.add(textFields.createLabeledTextField("   Address Low : ", textFields.addressLowField, textFieldSize, 200));
+        optionsPanel.add(Box.createVerticalStrut(10));
+        optionsPanel.add(textFields.createLabeledTextField("   Data to Send  ", textFields.sendDataField, textFieldSize, 200));
         optionsPanel.add(Box.createVerticalGlue());
         optionsPanel.add(Box.createHorizontalStrut(50));
         optionsPanel.add(textFields.createLabeledTextArea("", textFields.terminalField, terminalSize, 100));

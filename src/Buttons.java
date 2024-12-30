@@ -43,6 +43,11 @@ public class Buttons extends JButton implements ActionListener{
         else if(e.getSource().equals(setParametersButton)){
             loraConfig.setConfiguration();
             loraPort.sendParameters();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
         }
         else if(e.getSource().equals(sendDataButton)){
             loraPort.sendData((byte)30);
